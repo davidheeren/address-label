@@ -14,12 +14,12 @@ The script expects an `.xlsx` file with the following columns in order. The firs
 
 ### Command Line
 
-Use `python main.py -h` for help.
+Use `uv run main.py -h` for help.
 
 ### GUI
 
 There's also a GUI. Run it with:
-`python gui.py`
+`uv run gui.py`
 
 It has all the same options and saves your settings between sessions.
 
