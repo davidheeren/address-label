@@ -1,5 +1,6 @@
 
 import customtkinter as ctk
+import filedialpy as fdp
 from argparse import Namespace
 from pathlib import Path
 from typing import Callable
@@ -97,13 +98,14 @@ class LabelGeneratorApp:
     def _update_input_var(self):
         """Gets input path from the user"""
         dir_path = Path(self.input_var.get()).parent
+        file_path = Path(self.input_var.get())
         if dir_path == Path("."):
             dir_path = Path.home()
-        path = ctk.filedialog.askopenfilename(
-            title="Select a File",
-            # filetypes=[("Data files", "*.csv *.xlsx"), ("All files", "*.*")],
-            filetypes=[("Data files", "*.xlsx"), ("All files", "*.*")],
-            initialdir=str(dir_path)
+        path = fdp.openFile(
+            title="Select a Excel Spreadsheet",
+            initial_dir=str(dir_path),
+            initial_file=file_path,
+            filter=["*.xlsx", "*"],
         )
         if not path:
             return
@@ -112,14 +114,14 @@ class LabelGeneratorApp:
     def _update_output_var(self):
         """Gets the output path from the user"""
         dir_path = Path(self.output_var.get()).parent
+        file_path = Path(self.output_var.get())
         if dir_path == Path("."):
             dir_path = Path.home()
-        path = ctk.filedialog.asksaveasfilename(
-            title="Select a File",
-            defaultextension=".pdf",
-            initialfile="labels",
-            filetypes=[("PDF files", "*.pdf"), ("All files", "*.*")],
-            initialdir=str(dir_path)
+        path = fdp.saveFile(
+            title="Save a PDF file",
+            initial_dir=str(dir_path),
+            initial_file=file_path,
+            filter=["*.pdf", "*"],
         )
         if not path:
             return
