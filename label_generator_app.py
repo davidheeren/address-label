@@ -108,7 +108,7 @@ class LabelGeneratorApp:
         path = fdp.openFile(
             title="Select a Excel Spreadsheet",
             initial_dir=str(dir_path),
-            initial_file=file_path,
+            initial_file=str(file_path),
             filter=["*.xlsx", "*"],
         )
         if not path:
@@ -124,7 +124,7 @@ class LabelGeneratorApp:
         path = fdp.saveFile(
             title="Save a PDF file",
             initial_dir=str(dir_path),
-            initial_file=file_path,
+            initial_file=str(file_path),
             filter=["*.pdf", "*"],
         )
         if not path:
