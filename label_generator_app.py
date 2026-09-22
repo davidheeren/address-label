@@ -139,9 +139,18 @@ class LabelGeneratorApp:
         frame = ctk.CTkFrame(self.scroll_frame)
         frame.grid(row=self.frame_row, column=0, padx=OUTER_PADX, pady=OUTER_PADY, sticky="w")
         frame.grid_columnconfigure(0, weight=1, minsize=MIN_FRAME_SIZE)
+
+        def set_tooltip_with_lines(new_tooltip: str):
+            min_line_count = 10
+            line_count = new_tooltip.count("\n") + 1
+            if line_count < min_line_count:
+                self.tooltip_var.set(new_tooltip + ("\n" * (min_line_count - line_count)))
+            else:
+                self.tooltip_var.set(new_tooltip)
+
         if tooltip_str:
-            frame.bind("<Leave>", lambda e: self.tooltip_var.set(""))
-            frame.bind("<Enter>", lambda e: self.tooltip_var.set(tooltip_str))
+            frame.bind("<Leave>", lambda e: set_tooltip_with_lines(""))
+            frame.bind("<Enter>", lambda e: set_tooltip_with_lines(tooltip_str))
         self.frame_row += 1
         return frame
 
