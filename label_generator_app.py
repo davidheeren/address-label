@@ -164,7 +164,7 @@ class LabelGeneratorApp:
         min_scale = 50
         scale_slider = ctk.CTkSlider(
             scale_frame,
-            number_of_steps=int((max_scale - min_scale) / 25),
+            number_of_steps=int((max_scale - min_scale) / 10),
             from_=min_scale,
             to=max_scale,
             variable=self.scale_var,
