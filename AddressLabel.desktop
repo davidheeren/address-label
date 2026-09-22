@@ -2,7 +2,7 @@
 # this file is for linux users
 # replace the exec, path, and icon varibles with the absolute path you cloned this repo to
 # copy this file to ~/.local/share/applications
-Name=AddressLabel
+Name=Address Label
 Exec=/the-path-of-this-repo-here/gui.py
 Path=/the-path-of-this-repo-here/
 Comment=Genereates a pdf from addresses
