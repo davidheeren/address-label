@@ -20,6 +20,8 @@ BUTTON_WIDTH = 75
 class LabelGeneratorApp:
     def __init__(self, inital_args: Namespace, save_options_func: Callable[[Namespace], None]):
         self.root = self._create_root()
+        self.scroll_frame = ctk.CTkScrollableFrame(self.root)
+        self.scroll_frame.pack(fill="both", expand=True)
 
         # Backing values for gui options
         self.input_var = ctk.StringVar()
@@ -134,7 +136,7 @@ class LabelGeneratorApp:
 
     def _create_frame(self, tooltip_str: str | None) -> ctk.CTkFrame:
         """Creates a frame class with a tooltip"""
-        frame = ctk.CTkFrame(self.root)
+        frame = ctk.CTkFrame(self.scroll_frame)
         frame.grid(row=self.frame_row, column=0, padx=OUTER_PADX, pady=OUTER_PADY, sticky="w")
         frame.grid_columnconfigure(0, weight=1, minsize=MIN_FRAME_SIZE)
         if tooltip_str:
@@ -245,7 +247,7 @@ Ex: '*, !5-20, !john, 15' -> adds all rows, removes range 5-10, removes all john
         self._set_grid_bottom(launch_widget)
 
     def _setup_tasks_bar(self):
-        task_frame = ctk.CTkFrame(self.root)
+        task_frame = ctk.CTkFrame(self.scroll_frame)
         task_frame.grid(row=self.frame_row, column=0, padx=OUTER_PADX, pady=OUTER_PADY, sticky="w")
         task_frame.grid_columnconfigure(0, weight=1, minsize=MIN_FRAME_SIZE / 2)
         task_frame.grid_columnconfigure(1, weight=1, minsize=MIN_FRAME_SIZE / 2)
