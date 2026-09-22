@@ -20,7 +20,7 @@ BUTTON_WIDTH = 75
 class LabelGeneratorApp:
     def __init__(self, inital_args: Namespace, save_options_func: Callable[[Namespace], None]):
         self.root = self._create_root()
-        self.scroll_frame = ctk.CTkScrollableFrame(self.root)
+        self.scroll_frame = ctk.CTkScrollableFrame(self.root, fg_color="transparent")
         self.scroll_frame.pack(fill="both", expand=True)
 
         # Backing values for gui options
@@ -183,7 +183,7 @@ class LabelGeneratorApp:
 
         scale_slider.bind("<ButtonRelease-1>", lambda val:  ctk.set_widget_scaling(self.scale_var.get() / 100))
         self._set_grid_bottom(scale_slider)
-        scale_label = ctk.CTkLabel(scale_frame)
+        scale_label = ctk.CTkLabel(scale_frame, width=BUTTON_WIDTH)
         self._set_grid_right(scale_label)
 
         def _update_scale_label(value):
