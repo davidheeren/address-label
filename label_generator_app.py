@@ -16,8 +16,6 @@ INNER_PADY = 5
 MIN_FRAME_SIZE = 500
 BUTTON_WIDTH = 75
 
-UI_SCALE = 1
-
 
 class LabelGeneratorApp:
     def __init__(self, inital_args: Namespace, save_options_func: Callable[[Namespace], None]):
@@ -33,13 +31,16 @@ class LabelGeneratorApp:
         self.test_var = ctk.BooleanVar()
         self.launch_var = ctk.BooleanVar()
         self.tooltip_var = ctk.StringVar(value="")
+        self.scale_var = ctk.IntVar()
 
         self._set_options(inital_args)
+        ctk.set_widget_scaling(self.scale_var.get() / 100)
         self.save_options_func = save_options_func
         self.vint_cmd = (self.root.register(self._validate_integer), '%P')
         self.frame_row = 0
 
         # Setup the UI
+        self._setup_scale_option()
         self._setup_input_option()
         self._setup_output_option()
         self._setup_filter_option()
@@ -54,7 +55,6 @@ class LabelGeneratorApp:
     def _create_root(self) -> ctk.CTk:
         """Creates CTK root and sets vars"""
         ctk.set_appearance_mode("dark")
-        ctk.set_widget_scaling(UI_SCALE)
         root = ctk.CTk()
         root.title("Address Label Generator")
         root.geometry("800x900")
@@ -70,6 +70,7 @@ class LabelGeneratorApp:
         self.name_var.set(args.name)
         self.test_var.set(args.test)
         self.launch_var.set(args.launch)
+        self.scale_var.set(args.scale)
 
     def _get_args_from_options(self) -> Namespace:
         """Returns args from the options"""
@@ -82,6 +83,7 @@ class LabelGeneratorApp:
             name=self.name_var.get(),
             test=self.test_var.get(),
             launch=self.launch_var.get(),
+            scale=self.scale_var.get(),
         )
 
     def _generate_pdf(self):
@@ -152,6 +154,31 @@ class LabelGeneratorApp:
     # Bottom Right
     def _set_grid_right(self, base: ctk.CTkBaseClass):
         base.grid(row=1, column=1, padx=INNER_PADX, pady=INNER_PADY, sticky="e")
+
+    def _setup_scale_option(self):
+        scale_frame = self._create_frame("<UI Scale> The UI scale in this window")
+        scale_header = ctk.CTkLabel(scale_frame, text="UI Scale")
+        self._set_grid_top(scale_header)
+
+        max_scale = 200
+        min_scale = 50
+        scale_slider = ctk.CTkSlider(
+            scale_frame,
+            number_of_steps=int((max_scale - min_scale) / 25),
+            from_=min_scale,
+            to=max_scale,
+            variable=self.scale_var,
+        )
+
+        scale_slider.bind("<ButtonRelease-1>", lambda val:  ctk.set_widget_scaling(self.scale_var.get() / 100))
+        self._set_grid_bottom(scale_slider)
+        scale_label = ctk.CTkLabel(scale_frame)
+        self._set_grid_right(scale_label)
+
+        def _update_scale_label(value):
+            scale_label.configure(text=f"{value:.0f}")
+        _update_scale_label(self.scale_var.get())
+        scale_slider.configure(command=_update_scale_label)
 
     def _setup_input_option(self):
         input_frame = self._create_frame("<Input> An Excel file that holds the address data")
@@ -227,7 +254,10 @@ Ex: '*, !5-20, !john, 15' -> adds all rows, removes range 5-10, removes all john
         run_button = ctk.CTkButton(task_frame, text="Run", command=self._generate_pdf, width=BUTTON_WIDTH)
         run_button.grid(row=1, column=0, padx=INNER_PADX, pady=INNER_PADY)
 
-        reset_button = ctk.CTkButton(task_frame, text="Reset Options", command=lambda: self._set_options(get_args(True)), width=BUTTON_WIDTH)
+        def _reset_options():
+            self._set_options(get_args(True))
+            ctk.set_widget_scaling(self.scale_var.get() / 100)
+        reset_button = ctk.CTkButton(task_frame, text="Reset Options", command=_reset_options, width=BUTTON_WIDTH)
         reset_button.grid(row=1, column=1, padx=INNER_PADX, pady=INNER_PADY)
 
     def _setup_tooltip_bar(self):
