@@ -1,7 +1,7 @@
 [Desktop Entry]
-# this file is for linux users
+# this file is for linux users to run the gui from the desktop environment
 # replace the exec, path, and icon varibles with the absolute path you cloned this repo to
-# copy this file to ~/.local/share/applications
+# copy this file to ~/.local/share/applications or ~/Desktop
 Name=Address Label
 Exec=/the-path-of-this-repo-here/gui.py
 Path=/the-path-of-this-repo-here/
