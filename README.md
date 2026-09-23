@@ -26,3 +26,6 @@ It has all the same options and saves your settings between sessions.
 On Linux, the GUI needs the tk system package
 On Linux, the file dialogue uses either zenity or kdialog
 
+### Testing
+
+`uv run python -m unittest`
