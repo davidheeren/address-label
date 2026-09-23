@@ -33,13 +33,13 @@ class LabelGenerator:
             raise FileNotFoundError(f"Input file not found at: {path}")
 
         if path.suffix.lower() != ".xlsx":
-            raise ValueError(f"Unsupported file type: {path.suffix}. Only .xls or .xlsx files are supported.")
+            raise ValueError(f"Unsupported file type: {path.suffix}. Only or .xlsx files are supported.")
 
         wb = load_workbook(path)
         return wb.active
 
     def _find_max_row(self) -> int:
-        """Finds the max row that is not empty, since ws.max_row counts empty rows"""
+        """Finds the max row that is not empty, since ws.max_row counts empty rows at the end"""
         count = 0
         for row in self.ws:
             if any(cell.value is not None for cell in row):
@@ -73,8 +73,9 @@ class LabelGenerator:
             filters.append((f, invert))
         return filters
 
-    def _match_name(self, filter: str) -> set[int]:
+    def _match_names(self, filter: str) -> set[int]:
         """
+        Takes a list of names seperated by spaces
         Returns a set of all indices matched in the name fields
         All parts in the split input filter, must match an address name field
         """
@@ -135,7 +136,7 @@ class LabelGenerator:
 
             # Filter is a name
             elif all(c.isalpha() or c.isspace() for c in filter):
-                match_nums = self._match_name(filter)
+                match_nums = self._match_names(filter)
                 nums.update(match_nums)
                 print(f"Matched name: '{filter}', {len(match_nums)} times")
 
@@ -157,7 +158,7 @@ class LabelGenerator:
         # Remove name
         name_idx = -1
         if self.args.name:
-            match_nums = self._match_name(self.args.name)
+            match_nums = self._match_names(self.args.name)
             if len(match_nums) == 0:
                 raise ValueError(f"Name: '{self.args.name}' not found. This is needed for the return address")
             if len(match_nums) > 1:
