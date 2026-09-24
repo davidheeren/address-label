@@ -27,6 +27,7 @@ class LabelGeneratorApp:
         self.input_var = ctk.StringVar()
         self.output_var = ctk.StringVar()
         self.filter_var = ctk.StringVar()
+        self.no_header_var = ctk.BooleanVar()
         self.bias_var = ctk.StringVar()
         self.ret_var = ctk.BooleanVar()
         self.name_var = ctk.StringVar()
@@ -46,6 +47,7 @@ class LabelGeneratorApp:
         self._setup_input_option()
         self._setup_output_option()
         self._setup_filter_option()
+        self._setup_no_header_option()
         self._setup_bias_option()
         self._setup_ret_option()
         self._setup_name_option()
@@ -67,6 +69,7 @@ class LabelGeneratorApp:
         self.input_var.set(args.input)
         self.output_var.set(args.output)
         self.filter_var.set(args.filter)
+        self.no_header_var.set(args.no_header)
         self.bias_var.set(args.bias)
         self.ret_var.set(args.ret)
         self.name_var.set(args.name)
@@ -80,6 +83,7 @@ class LabelGeneratorApp:
             input=self.input_var.get(),
             output=self.output_var.get(),
             filter=self.filter_var.get(),
+            no_header=self.no_header_var.get(),
             bias=int(self.bias_var.get()) if self.bias_var.get() else 0,
             ret=self.ret_var.get(),
             name=self.name_var.get(),
@@ -225,6 +229,11 @@ Ex: '*, !5-20, !john, 15' -> adds all rows, removes range 5-10, removes all john
         self._set_grid_top(filter_header)
         filter_widget = ctk.CTkEntry(filter_frame, textvariable=self.filter_var)
         self._set_grid_bottom(filter_widget)
+
+    def _setup_no_header_option(self):
+        no_header_frame = self._create_frame("<No Header> The data has no header row")
+        no_header_widget = ctk.CTkCheckBox(no_header_frame, text="No Header", variable=self.no_header_var)
+        self._set_grid_bottom(no_header_widget)
 
     def _setup_bias_option(self):
         bias_frame = self._create_frame("<Bias> Number of labels to skip before printing. This is for partially used label sheets")
