@@ -9,11 +9,11 @@ from src.label_generator import LabelGenerator
 
 # NOTE: this is my using this library or any python gui lol
 
-OUTER_PADX = 20
-OUTER_PADY = 10
-INNER_PADX = 5
-INNER_PADY = 5
-MIN_FRAME_SIZE = 500
+OUTER_PADX = 12
+OUTER_PADY = 6
+INNER_PADX = 6
+INNER_PADY = 3
+MIN_FRAME_SIZE = 550
 BUTTON_WIDTH = 75
 
 
@@ -141,7 +141,7 @@ class LabelGeneratorApp:
         frame.grid_columnconfigure(0, weight=1, minsize=MIN_FRAME_SIZE)
 
         def set_tooltip_with_lines(new_tooltip: str):
-            min_line_count = 10
+            min_line_count = 9
             line_count = new_tooltip.count("\n") + 1
             if line_count < min_line_count:
                 self.tooltip_var.set(new_tooltip + ("\n" * (min_line_count - line_count)))
