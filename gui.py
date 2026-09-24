@@ -1,8 +1,8 @@
 #!/usr/bin/env -S uv run --script
 
 from argparse import Namespace
-from main import get_args
-from label_generator_app import LabelGeneratorApp
+from src.arguments import get_args
+from src.label_generator_app import LabelGeneratorApp
 from pathlib import Path
 import json
 import platformdirs

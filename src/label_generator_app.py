@@ -4,8 +4,8 @@ import filedialpy as fdp
 from argparse import Namespace
 from pathlib import Path
 from typing import Callable
-from main import get_args
-from label_generator import LabelGenerator
+from src.arguments import get_args
+from src.label_generator import LabelGenerator
 
 # NOTE: this is my using this library or any python gui lol
 

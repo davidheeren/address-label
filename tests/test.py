@@ -1,14 +1,15 @@
 import unittest
-import main
-from label_generator import LabelGenerator, Address
+from src.arguments import get_args
+from src.label_generator import LabelGenerator, Address
 
 
 class TestLabelGenerator(unittest.TestCase):
 
-    def _get_default_args():
-        args = main.get_args()
-        args.input = "addresses.xlsx"
+    def _get_default_args(self):
+        args = get_args(True)
+        args.input = "tests/TestData.xlsx"
         args.output = "labels.pdf"
+        return args
 
     def test_split_filters1(self):
         args = self._get_default_args()
