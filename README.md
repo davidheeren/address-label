@@ -28,4 +28,4 @@ On Linux, the file dialogue uses either zenity or kdialog
 
 ### Testing
 
-`uv run python -m unittest`
+`./run-tests.sh`
