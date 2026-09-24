@@ -12,8 +12,8 @@ def get_args(defaults: bool = False) -> Namespace:
         description="Creates a pdf for printing address labels from an Excel file.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    parser.add_argument("-i", "--input", default="addresses.xlsx", help="The input excel spreadsheet file path")
-    parser.add_argument("-o", "--output", default="labels.pdf", help="The output pdf file path")
+    parser.add_argument("-i", "--input", required=True, help="The input excel spreadsheet file path")
+    parser.add_argument("-o", "--output", required=True, help="The output pdf file path")
     parser.add_argument("-f", "--filter", default="*", help="Ex: 'mary joe, 4-9, !5'")
     parser.add_argument("-b", "--bias", type=int, default=0, help="Count of labels to offset")
     parser.add_argument("-n", "--name", default="", help="Your name to find return addresses row")
