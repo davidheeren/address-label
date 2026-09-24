@@ -22,7 +22,9 @@ def get_args(defaults: bool = False) -> Namespace:
     parser.add_argument("-l", "--launch", action="store_true", help="Launch the pdf in the browser")
     parser.add_argument("-s", "--scale", type=int, default=100, help="Scale in percent for the UI in the window")
     if defaults:
-        return parser.parse_args([])
+        # Because we require input and output arguments,
+        # we need to pass in empty strings
+        return parser.parse_args(["-i", " ", "-o", " "])
     return parser.parse_args()
 
 
