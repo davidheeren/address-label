@@ -6,7 +6,7 @@ It is tailored to work with my specific address data, in an Excel spreadsheet. T
 
 ## Excel Format
 
-The script expects an `.xlsx` file with the following columns in order.
+The script expects an `.xlsx` or `.csv` file with the following columns in order. A header is optional
 
 `last_name1, first_name1, last_name2, first_name2, address1, address2, city, state, zip, country`
 
