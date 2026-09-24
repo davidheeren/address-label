@@ -33,8 +33,8 @@ class ExcelDataSheet:
 
     def get_address(self, row: int) -> Address:
         """Returns a address record from the data at the 1 based row index"""
-        if row < 2 or row > self.max_row:
-            raise ValueError(f"Row index: {row} out of bounds: 2-{self.max_row}")
+        if row < self.min_row or row > self.max_row:
+            raise ValueError(f"Row index: {row} out of bounds: {self.min_row}-{self.max_row}")
         values = [
             self.ws.cell(row=row, column=col).value
             for col in range(1, ADDRESS_COLUMN_COUNT + 1)

@@ -14,14 +14,14 @@ class LabelGenerator:
     def __init__(self, args: Namespace):
         """Setup and load data"""
         self.args = args
-        self.data_sheet = self._load_data_sheet(self.args.input)
+        self.data_sheet = self._load_data_sheet(self.args.input, not self.args.no_header)
 
-    def _load_data_sheet(self, input_path: str) -> DataSheet:
+    def _load_data_sheet(self, input_path: str, header: bool) -> DataSheet:
         path = Path(input_path)
         if not path.is_file():
             raise FileNotFoundError(f"Input file not found at: {path}")
         if path.suffix.lower() == ".xlsx":
-            return ExcelDataSheet(True, input_path)
+            return ExcelDataSheet(header, input_path)
         elif path.suffix.lower() == ".csv":
             raise NotImplementedError("Don't use csv files yet")
         else:

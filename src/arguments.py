@@ -19,6 +19,7 @@ def get_args(defaults: bool = False) -> Namespace:
     parser.add_argument("-t", "--test", action="store_true", help="Put box lines around each lablel")
     parser.add_argument("-l", "--launch", action="store_true", help="Launch the pdf in the browser")
     parser.add_argument("-s", "--scale", type=int, default=100, help="Scale in percent for the UI in the window")
+    parser.add_argument("-H", "--no-header", action="store_true", help="The data file has no header row")
     if defaults:
         # Because we require input and output arguments,
         # we need to pass in empty strings
