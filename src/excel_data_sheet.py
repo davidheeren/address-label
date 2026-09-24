@@ -2,7 +2,6 @@
 from src.data_sheet import Address, ADDRESS_COLUMN_COUNT
 from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl import load_workbook
-from pathlib import Path
 
 
 class ExcelDataSheet:
@@ -15,12 +14,7 @@ class ExcelDataSheet:
     # assume that the input path is the correct filetype and exists
     def _load_worksheet(self, input_path: str) -> Worksheet:
         """Loads an Excel file and returns the first Worksheet"""
-        path = Path(input_path)
-        # if not path.is_file():
-        #     raise FileNotFoundError(f"Input file not found at: {path}")
-        # if path.suffix.lower() != ".xlsx":
-        #     raise ValueError(f"Unsupported file type: {path.suffix}. Only or .xlsx files are supported.")
-        wb = load_workbook(path)
+        wb = load_workbook(input_path)
         return wb.active
 
     def _find_max_row(self, ws: Worksheet) -> int:

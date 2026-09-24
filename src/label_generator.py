@@ -5,6 +5,7 @@ from pathlib import Path
 from pylabels import Sheet, Specification
 from reportlab.graphics import shapes
 from src.excel_data_sheet import ExcelDataSheet
+from src.csv_data_sheet import CsvDataSheet
 from src.data_sheet import DataSheet, Address
 
 # Pylabels2 docs example: https://github.com/erikvw/pylabels2/blob/main/pylabels/demos/addresses.py
@@ -23,7 +24,7 @@ class LabelGenerator:
         if path.suffix.lower() == ".xlsx":
             return ExcelDataSheet(header, input_path)
         elif path.suffix.lower() == ".csv":
-            raise NotImplementedError("Don't use csv files yet")
+            return CsvDataSheet(header, input_path)
         else:
             raise ValueError(f"Unsupported file type: {path.suffix}. Only .xlsx or .csv files are supported.")
 

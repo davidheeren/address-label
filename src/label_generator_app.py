@@ -113,7 +113,7 @@ class LabelGeneratorApp:
             title="Select a Excel Spreadsheet",
             initial_dir=str(dir_path),
             initial_file=str(file_path),
-            filter=["*.xlsx", "*"],
+            filter=["*.xlsx *.csv"],
         )
         if not path:
             return
@@ -129,7 +129,7 @@ class LabelGeneratorApp:
             title="Save a PDF file",
             initial_dir=str(dir_path),
             initial_file=str(file_path),
-            filter=["*.pdf", "*"],
+            filter=["*.pdf"],
         )
         if not path:
             return
