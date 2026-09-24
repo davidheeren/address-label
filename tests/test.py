@@ -2,13 +2,18 @@ import unittest
 from src.arguments import get_args
 from src.label_generator import LabelGenerator
 from src.data_sheet import Address
+from src.excel_data_sheet import ExcelDataSheet
+from src.csv_data_sheet import CsvDataSheet
+
+EXCEL_DATA_PATH = "tests/TestData.xlsx"
+CSV_DATA_PATH = "tests/TestData.csv"
 
 
 class TestLabelGenerator(unittest.TestCase):
 
     def _get_default_args(self):
         args = get_args(True)
-        args.input = "tests/TestData.xlsx"
+        args.input = EXCEL_DATA_PATH
         args.output = "labels.pdf"
         return args
 
@@ -33,24 +38,24 @@ class TestLabelGenerator(unittest.TestCase):
             _ = label_generator._split_and_format_filters()
 
     def test_get_address1(self):
-        args = self._get_default_args()
-        label_generator = LabelGenerator(args)
-        new_address = label_generator.data_sheet.get_address(2)
-        compare_address = Address("Chen", "Olivia", None, None, "123 Maple St", None, "Sunnyvale", "CA", 94086, None)
-        self.assertEqual(new_address, compare_address)
+        new_excel_address = ExcelDataSheet(True, EXCEL_DATA_PATH).get_address(2)
+        new_csv_address = CsvDataSheet(True, CSV_DATA_PATH).get_address(2)
+        compare_address = Address("Chen", "Olivia", None, None, "123 Maple St", None, "Sunnyvale", "CA", "94086", None)
+        self.assertEqual(new_excel_address, compare_address)
+        self.assertEqual(new_csv_address, compare_address)
 
     def test_get_address2(self):
-        args = self._get_default_args()
-        label_generator = LabelGenerator(args)
-        new_address = label_generator.data_sheet.get_address(5)
-        compare_address = Address("Goldberg", "Liam", "Miller", "Sarah", "101 Cedar Ct", None, "Portland", "OR", 97209, None)
-        self.assertEqual(new_address, compare_address)
+        new_excel_address = ExcelDataSheet(True, EXCEL_DATA_PATH).get_address(5)
+        new_csv_address = CsvDataSheet(True, CSV_DATA_PATH).get_address(5)
+        compare_address = Address("Goldberg", "Liam", "Miller", "Sarah", "101 Cedar Ct", None, "Portland", "OR", "97209", None)
+        self.assertEqual(new_excel_address, compare_address)
+        self.assertEqual(new_csv_address, compare_address)
 
     def test_get_address3(self):
-        args = self._get_default_args()
-        label_generator = LabelGenerator(args)
         with self.assertRaisesRegex(ValueError, "out of bounds"):
-            _ = label_generator.data_sheet.get_address(50)
+            _ = ExcelDataSheet(True, EXCEL_DATA_PATH).get_address(50)
+        with self.assertRaisesRegex(ValueError, "out of bounds"):
+            _ = CsvDataSheet(True, CSV_DATA_PATH).get_address(50)
 
     def test_match_names1(self):
         args = self._get_default_args()

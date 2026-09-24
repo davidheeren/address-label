@@ -14,7 +14,8 @@ class CsvDataSheet:
     def _load_data(self, input_path: str) -> list[list[object]]:
         """Loads a whole csv file into memory as a list"""
         with open(input_path, mode="r") as file:
-            return list(csv.reader(file))
+            # convert empty strings to None values for consistency with the excel version
+            return [[value if value != "" else None for value in row] for row in csv.reader(file)]
 
     def _find_max_row(self, data: list[list[object]]) -> int:
         """Nothing special here because csv files don't have lots of extra rows due to formatting"""

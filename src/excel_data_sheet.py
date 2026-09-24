@@ -30,7 +30,8 @@ class ExcelDataSheet:
         if row < self.min_row or row > self.max_row:
             raise ValueError(f"Row index: {row} out of bounds: {self.min_row}-{self.max_row}")
         values = [
-            self.ws.cell(row=row, column=col).value
+            # convert to string if not None
+            None if (value := self.ws.cell(row=row, column=col).value) is None else str(value)
             for col in range(1, ADDRESS_COLUMN_COUNT + 1)
         ]
         return Address(*values)
