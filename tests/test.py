@@ -1,6 +1,7 @@
 import unittest
 from src.arguments import get_args
-from src.label_generator import LabelGenerator, Address
+from src.label_generator import LabelGenerator
+from src.data_sheet import Address
 
 
 class TestLabelGenerator(unittest.TestCase):
@@ -34,14 +35,14 @@ class TestLabelGenerator(unittest.TestCase):
     def test_get_address1(self):
         args = self._get_default_args()
         label_generator = LabelGenerator(args)
-        new_address = label_generator._get_address(2)
+        new_address = label_generator.data_sheet.get_address(2)
         compare_address = Address("Chen", "Olivia", None, None, "123 Maple St", None, "Sunnyvale", "CA", 94086, None)
         self.assertEqual(new_address, compare_address)
 
     def test_get_address2(self):
         args = self._get_default_args()
         label_generator = LabelGenerator(args)
-        new_address = label_generator._get_address(5)
+        new_address = label_generator.data_sheet.get_address(5)
         compare_address = Address("Goldberg", "Liam", "Miller", "Sarah", "101 Cedar Ct", None, "Portland", "OR", 97209, None)
         self.assertEqual(new_address, compare_address)
 
@@ -49,7 +50,7 @@ class TestLabelGenerator(unittest.TestCase):
         args = self._get_default_args()
         label_generator = LabelGenerator(args)
         with self.assertRaisesRegex(ValueError, "out of bounds"):
-            _ = label_generator._get_address(50)
+            _ = label_generator.data_sheet.get_address(50)
 
     def test_match_names1(self):
         args = self._get_default_args()

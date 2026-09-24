@@ -1,60 +1,31 @@
 
 from argparse import Namespace
 import webbrowser
-from openpyxl import load_workbook
-from openpyxl.worksheet.worksheet import Worksheet
 from pathlib import Path
 from pylabels import Sheet, Specification
-from collections import namedtuple
 from reportlab.graphics import shapes
+from src.excel_data_sheet import ExcelDataSheet
+from src.data_sheet import DataSheet, Address
 
 # Pylabels2 docs example: https://github.com/erikvw/pylabels2/blob/main/pylabels/demos/addresses.py
-
-ADDRESS_COLUMN_COUNT = 10
-
-
-# Record data format
-Address = namedtuple(
-    "Address", ["last_name1", "first_name1", "last_name2", "first_name2", "address1", "address2", "city", "state", "zip", "country"]
-)
 
 
 class LabelGenerator:
     def __init__(self, args: Namespace):
         """Setup and load data"""
         self.args = args
-        self.ws = self._load_worksheet()
-        self.max_row = self._find_max_row()
+        self.data_sheet = self._load_data_sheet(self.args.input)
 
-    def _load_worksheet(self) -> Worksheet:
-        """Loads an Excel file and returns the first Worksheet"""
-        path = Path(self.args.input)
+    def _load_data_sheet(self, input_path: str) -> DataSheet:
+        path = Path(input_path)
         if not path.is_file():
             raise FileNotFoundError(f"Input file not found at: {path}")
-
-        if path.suffix.lower() != ".xlsx":
-            raise ValueError(f"Unsupported file type: {path.suffix}. Only or .xlsx files are supported.")
-
-        wb = load_workbook(path)
-        return wb.active
-
-    def _find_max_row(self) -> int:
-        """Finds the max row that is not empty, since ws.max_row counts empty rows at the end"""
-        count = 0
-        for row in self.ws:
-            if any(cell.value is not None for cell in row):
-                count += 1
-        return count
-
-    def _get_address(self, row: int) -> Address:
-        """Returns a address record from the data at the 1 based row index"""
-        if row < 2 or row > self.max_row:
-            raise ValueError(f"Row index: {row} out of bounds: 2-{self.max_row}")
-        values = [
-            self.ws.cell(row=row, column=col).value
-            for col in range(1, ADDRESS_COLUMN_COUNT + 1)
-        ]
-        return Address(*values)
+        if path.suffix.lower() == ".xlsx":
+            return ExcelDataSheet(True, input_path)
+        elif path.suffix.lower() == ".csv":
+            raise NotImplementedError("Don't use csv files yet")
+        else:
+            raise ValueError(f"Unsupported file type: {path.suffix}. Only .xlsx or .csv files are supported.")
 
     def _split_and_format_filters(self) -> list[tuple[str, bool]]:
         """Returns a list of filters: (string, invert). Split on ','"""
@@ -81,8 +52,8 @@ class LabelGenerator:
         """
         filter_parts = [x.strip().lower() for x in filter.split()]
         indices = set()
-        for i in range(2, self.max_row + 1):
-            address = self._get_address(i)
+        for i in range(self.data_sheet.min_row, self.data_sheet.max_row + 1):
+            address = self.data_sheet.get_address(i)
             # Address name fields if they exist
             address_parts = {
                 x.strip().lower()
@@ -105,16 +76,16 @@ class LabelGenerator:
             if len(parts) != 2 or not parts[0].strip().isdigit() or not parts[1].strip().isdigit():
                 raise ValueError(f"Invalid index range: {filter}")
             start, end = map(int, (parts[0], parts[1]))
-            if start < 2 or start > self.max_row or end < 2 or end > self.max_row:
-                raise ValueError(f"Invalid index: {filter}, out of bounds {2}-{self.max_row}")
+            if start < self.data_sheet.min_row or start > self.data_sheet.max_row or end < self.data_sheet.min_row or end > self.data_sheet.max_row:
+                raise ValueError(f"Invalid index: {filter}, out of bounds {self.data_sheet.min_row}-{self.data_sheet.max_row}")
             if start > end:
                 raise ValueError(f"Invalid range: start > end in {filter}")
             return set(range(start, end + 1))
 
         # Filter is single number
         num = int(filter)
-        if num < 2 or num > self.max_row:
-            raise ValueError(f"Invalid index: {filter}, out of bounds {2}-{self.max_row}")
+        if num < self.data_sheet.min_row or num > self.data_sheet.max_row:
+            raise ValueError(f"Invalid index: {filter}, out of bounds {self.data_sheet.min_row}-{self.data_sheet.max_row}")
         return {num}
 
     def _filter_indices(self) -> tuple[set[int], int]:
@@ -132,7 +103,7 @@ class LabelGenerator:
 
             # Filter is wildcard
             if filter == "*":
-                nums.update(range(2, self.max_row + 1))
+                nums.update(range(self.data_sheet.min_row, self.data_sheet.max_row + 1))
 
             # Filter is a name
             elif all(c.isalpha() or c.isspace() for c in filter):
@@ -263,7 +234,7 @@ class LabelGenerator:
 
         # Add labels for the indices
         for i in sorted(list(indices)):
-            address = self._get_address(i)
+            address = self.data_sheet.get_address(i)
 
             if not any(address):
                 print(f"Warning: Skipping blank row index '{i}'")
@@ -279,7 +250,7 @@ class LabelGenerator:
         if self.args.ret:
             if not self.args.name:
                 raise ValueError("Name must be set to use the ret option")
-            sheet.add_label(self._get_address(name_idx), count=len(indices))
+            sheet.add_label(self.data_sheet.get_address(name_idx), count=len(indices))
 
         sheet.save(self.args.output)
         print(f"{sheet.label_count} label(s) output on {sheet.page_count} page(s).")
