@@ -236,10 +236,48 @@ Ex: '*, !5-20, !john, 15' -> adds all rows, removes range 5-10, removes all john
         self._set_grid_top(filter_header)
         filter_widget = ctk.CTkTextbox(filter_frame, height=80, width=MIN_FRAME_SIZE - INNER_PADX * 2, wrap="word")
         filter_widget.insert("1.0", self.filter_var.get())
+
+        filter_widget.tag_config("add_wildcard", foreground="#8ee08e") # light green
+        filter_widget.tag_config("add_name", foreground="#4caf50") # medium green
+        filter_widget.tag_config("add_range", foreground="#2e7d32") # dark green
+        filter_widget.tag_config("remove_wildcard", foreground="#90caf9") # light blue
+        filter_widget.tag_config("remove_name", foreground="#2196f3") # medium blue
+        filter_widget.tag_config("remove_range", foreground="#1565c0") # dark blue
+        filter_widget.tag_config("invalid", foreground="#e53935") # red
+        ALL_TAGS = (
+            "add_wildcard", "add_name", "add_range",
+            "remove_wildcard", "remove_name", "remove_range",
+            "invalid",
+        )
+        def classify_filter(filter_str: str):
+            """Returns the tag name for a single filter term, already split on commas
+            and the leading '!' removed."""
+            if filter_str == "*":
+                return "wildcard"
+            elif all(c.isalpha() or c.isspace() for c in filter_str):
+                return "name"
+            elif all(c.isdigit() or c == "-" or c.isspace() for c in filter_str):
+                return "range"
+            else:
+                return None  # invalid
+
         def _on_text_changed(event):
             current = filter_widget.get("1.0", "end-1c")
             self.filter_var.set(current)
+            for tag in ALL_TAGS:
+                filter_widget.tag_remove(tag, "1.0", "end")
+            pos = 0
+            for raw_term in current.split(","):
+                term = raw_term.strip()
+                invert = term.startswith("!")
+                filter_str = term[1:].strip() if invert else term
+                kind = classify_filter(filter_str)
+                tag = "invalid" if kind is None else f"{'remove' if invert else 'add'}_{kind}"
+                end = pos + len(raw_term)
+                filter_widget.tag_add(tag, f"1.0+{pos}c", f"1.0+{end}c")
+                pos = end + 1  # +1 to skip the comma
         filter_widget.bind("<KeyRelease>", _on_text_changed)
+        _on_text_changed(None)
         self._set_grid_bottom(filter_widget)
 
     def _setup_no_header_option(self):
