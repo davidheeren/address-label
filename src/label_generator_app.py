@@ -278,6 +278,11 @@ Ex: '*, !5-20, !john, 15' -> adds all rows, removes range 5-10, removes all john
                 pos = end + 1  # +1 to skip the comma
         filter_widget.bind("<KeyRelease>", _on_text_changed)
         _on_text_changed(None)
+        def _select_all(event):
+            filter_widget.tag_add("sel", "1.0", "end")
+            # filter_widget.mark_set("insert", "end")  # optional: move cursor to the end after selecting
+            return "break"  # prevents Tk's default Ctrl+A (move-to-line-start) from also firing
+        filter_widget.bind("<Control-a>", _select_all)
         self._set_grid_bottom(filter_widget)
 
     def _setup_no_header_option(self):
