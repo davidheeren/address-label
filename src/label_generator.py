@@ -115,7 +115,7 @@ class LabelGenerator:
                 print(f"Matched name: '{filter}', {len(match_nums)} times")
 
             # Filter is number or number range
-            elif all(c.isdigit() or c == "-" for c in filter):
+            elif all(c.isdigit() or c == "-" or c.isspace() for c in filter):
                 match_nums = self._match_index_or_range(filter)
                 nums.update(match_nums)
 
