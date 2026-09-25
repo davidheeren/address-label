@@ -57,6 +57,12 @@ class TestLabelGenerator(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "out of bounds"):
             _ = CsvDataSheet(True, CSV_DATA_PATH).get_address(50)
 
+    def test_get_address4(self):
+        with self.assertRaisesRegex(ValueError, "out of bounds"):
+            _ = ExcelDataSheet(False, EXCEL_DATA_PATH).get_address(0)
+        with self.assertRaisesRegex(ValueError, "out of bounds"):
+            _ = CsvDataSheet(False, CSV_DATA_PATH).get_address(0)
+
     def test_match_names1(self):
         args = self._get_default_args()
         label_generator = LabelGenerator(args)
