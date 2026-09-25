@@ -234,7 +234,12 @@ Ex: '*, !5-20, !john, 15' -> adds all rows, removes range 5-10, removes all john
         )
         filter_header = ctk.CTkLabel(filter_frame, text="Filter")
         self._set_grid_top(filter_header)
-        filter_widget = ctk.CTkEntry(filter_frame, textvariable=self.filter_var)
+        filter_widget = ctk.CTkTextbox(filter_frame, height=80, width=MIN_FRAME_SIZE - INNER_PADX * 2, wrap="word")
+        filter_widget.insert("1.0", self.filter_var.get())
+        def _on_text_changed(event):
+            current = filter_widget.get("1.0", "end-1c")
+            self.filter_var.set(current)
+        filter_widget.bind("<KeyRelease>", _on_text_changed)
         self._set_grid_bottom(filter_widget)
 
     def _setup_no_header_option(self):
