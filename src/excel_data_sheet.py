@@ -1,10 +1,10 @@
 
-from src.data_sheet import Address, ADDRESS_COLUMN_COUNT
+from src.data_sheet import DataSheet, Address, ADDRESS_COLUMN_COUNT
 from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl import load_workbook
 
 
-class ExcelDataSheet:
+class ExcelDataSheet(DataSheet):
 
     def __init__(self, header: bool, input_path: str):
         self.min_row = 2 if header else 1

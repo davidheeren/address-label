@@ -1,9 +1,9 @@
 
-from src.data_sheet import Address, ADDRESS_COLUMN_COUNT
+from src.data_sheet import Address, DataSheet, ADDRESS_COLUMN_COUNT
 import csv
 
 
-class CsvDataSheet:
+class CsvDataSheet(DataSheet):
 
     def __init__(self, header: bool, input_path: str):
         self.min_row = 2 if header else 1
