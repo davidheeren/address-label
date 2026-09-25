@@ -15,6 +15,7 @@ def get_args(defaults: bool = False) -> Namespace:
     parser.add_argument("-f", "--filter", default="*", help="Ex: 'mary joe, 4-9, !5'")
     parser.add_argument("-H", "--no-header", action="store_true", help="The data file has no header row")
     parser.add_argument("-b", "--bias", type=int, default=0, help="Count of labels to offset")
+    parser.add_argument("-c", "--count", type=int, default=1, help="How many times to repeat the selected addresses")
     parser.add_argument("-n", "--name", default="", help="Your name to find return addresses row")
     parser.add_argument("-r", "--ret", action="store_true", help="Include the same number of return address labels")
     parser.add_argument("-t", "--test", action="store_true", help="Put box lines around each lablel")

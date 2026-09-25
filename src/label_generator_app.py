@@ -29,6 +29,7 @@ class LabelGeneratorApp:
         self.filter_var = ctk.StringVar()
         self.no_header_var = ctk.BooleanVar()
         self.bias_var = ctk.StringVar()
+        self.count_var = ctk.StringVar()
         self.ret_var = ctk.BooleanVar()
         self.name_var = ctk.StringVar()
         self.test_var = ctk.BooleanVar()
@@ -49,6 +50,7 @@ class LabelGeneratorApp:
         self._setup_filter_option()
         self._setup_no_header_option()
         self._setup_bias_option()
+        self._setup_count_option()
         self._setup_ret_option()
         self._setup_name_option()
         self._setup_test_option()
@@ -71,6 +73,7 @@ class LabelGeneratorApp:
         self.filter_var.set(args.filter)
         self.no_header_var.set(args.no_header)
         self.bias_var.set(args.bias)
+        self.count_var.set(args.count)
         self.ret_var.set(args.ret)
         self.name_var.set(args.name)
         self.test_var.set(args.test)
@@ -85,6 +88,7 @@ class LabelGeneratorApp:
             filter=self.filter_var.get(),
             no_header=self.no_header_var.get(),
             bias=int(self.bias_var.get()) if self.bias_var.get() else 0,
+            count=int(self.count_var.get()) if self.count_var.get() else 1,
             ret=self.ret_var.get(),
             name=self.name_var.get(),
             test=self.test_var.get(),
@@ -241,6 +245,13 @@ Ex: '*, !5-20, !john, 15' -> adds all rows, removes range 5-10, removes all john
         self._set_grid_top(bias_header)
         bias_widget = ctk.CTkEntry(bias_frame, textvariable=self.bias_var, validate="key", validatecommand=self.vint_cmd)
         self._set_grid_bottom(bias_widget)
+
+    def _setup_count_option(self):
+        count_frame = self._create_frame("<Count> How many times to repeat the selected addresses")
+        count_header = ctk.CTkLabel(count_frame, text="Count")
+        self._set_grid_top(count_header)
+        count_widget = ctk.CTkEntry(count_frame, textvariable=self.count_var, validate="key", validatecommand=self.vint_cmd)
+        self._set_grid_bottom(count_widget)
 
     def _setup_ret_option(self):
         ret_frame = self._create_frame("<Ret> Prints your return address for each label")

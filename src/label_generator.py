@@ -245,7 +245,10 @@ class LabelGenerator:
                 print(f"Warning: Skipping row with name: '{address.first_name1}', index: '{i}' due to one or more missing address fields.")
                 continue
 
-            sheet.add_label(address)
+            # add the address with a min count of 1
+            count = self.args.count if self.args.count > 1 else 1
+            for j in range(count):
+                sheet.add_label(address)
 
         # Add return address labels
         if self.args.ret:
