@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Callable
 from src.arguments import get_args
 from src.label_generator import LabelGenerator
+import webbrowser
 
 # NOTE: this is my using this library or any python gui lol
 
@@ -15,6 +16,8 @@ INNER_PADX = 6
 INNER_PADY = 3
 MIN_FRAME_SIZE = 550
 BUTTON_WIDTH = 75
+
+DOCUMENTATION_URL = "https://github.com/davidheeren/address-label#address-label-generator"
 
 
 class LabelGeneratorApp:
@@ -278,8 +281,9 @@ Ex: '*, !5-20, !john, 15' -> adds all rows, removes range 5-10, removes all john
     def _setup_tasks_bar(self):
         task_frame = ctk.CTkFrame(self.scroll_frame)
         task_frame.grid(row=self.frame_row, column=0, padx=OUTER_PADX, pady=OUTER_PADY, sticky="w")
-        task_frame.grid_columnconfigure(0, weight=1, minsize=MIN_FRAME_SIZE / 2)
-        task_frame.grid_columnconfigure(1, weight=1, minsize=MIN_FRAME_SIZE / 2)
+        task_frame.grid_columnconfigure(0, weight=1, minsize=MIN_FRAME_SIZE / 3)
+        task_frame.grid_columnconfigure(1, weight=1, minsize=MIN_FRAME_SIZE / 3)
+        task_frame.grid_columnconfigure(2, weight=1, minsize=MIN_FRAME_SIZE / 3)
         self.frame_row += 1
 
         run_button = ctk.CTkButton(task_frame, text="Run", command=self._generate_pdf, width=BUTTON_WIDTH)
@@ -290,6 +294,9 @@ Ex: '*, !5-20, !john, 15' -> adds all rows, removes range 5-10, removes all john
             ctk.set_widget_scaling(self.scale_var.get() / 100)
         reset_button = ctk.CTkButton(task_frame, text="Reset Options", command=_reset_options, width=BUTTON_WIDTH)
         reset_button.grid(row=1, column=1, padx=INNER_PADX, pady=INNER_PADY)
+
+        docs_button = ctk.CTkButton(task_frame, text="Open Documentation", command=lambda: webbrowser.open(DOCUMENTATION_URL), width=BUTTON_WIDTH)
+        docs_button.grid(row=1, column=2, padx=INNER_PADX, pady=INNER_PADY)
 
     def _setup_tooltip_bar(self):
         tooltip_frame = self._create_frame(None)
