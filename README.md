@@ -6,7 +6,7 @@ It is tailored to work with my specific address data, in an Excel spreadsheet. T
 
 ## Excel Format
 
-The script expects an `.xlsx` or `.csv` file with the following columns in order. A header is optional
+The script expects an `.xlsx` or `.csv` file with the following columns in order. A header is optional.
 
 `last_name1, first_name1, last_name2, first_name2, address1, address2, city, state, zip, country`
 
@@ -23,8 +23,8 @@ There's also a GUI. Run it with:
 
 It has all the same options and saves your settings between sessions.
 
-On Linux, the GUI needs the tk system package
-On Linux, the file dialogue uses either zenity or kdialog
+On Linux, the GUI needs the tk system package.
+On Linux, the file dialogue uses either zenity or kdialog.
 
 ### Testing
 
