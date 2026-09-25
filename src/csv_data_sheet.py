@@ -26,7 +26,7 @@ class CsvDataSheet:
         if row < self.min_row or row > self.max_row:
             raise ValueError(f"Row index: {row} out of bounds: {self.min_row}-{self.max_row}")
         values = [
-            self.data[row - 1][col]
+            self.data[row - 1][col] if col < len(self.data[row - 1]) else None
             for col in range(0, ADDRESS_COLUMN_COUNT)
         ]
         return Address(*values)
