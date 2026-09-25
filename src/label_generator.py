@@ -18,6 +18,8 @@ class LabelGenerator:
         self.data_sheet = self._load_data_sheet(self.args.input, not self.args.no_header)
 
     def _load_data_sheet(self, input_path: str, header: bool) -> DataSheet:
+        if (input_path is None or input_path.strip() == ""):
+            raise FileNotFoundError("Input path cannot be empty")
         path = Path(input_path)
         if not path.is_file():
             raise FileNotFoundError(f"Input file not found at: {path}")
@@ -256,6 +258,8 @@ class LabelGenerator:
                 raise ValueError("Name must be set to use the ret option")
             sheet.add_label(self.data_sheet.get_address(name_idx), count=len(indices))
 
+        if (self.args.output is None or self.args.output.strip() == ""):
+            raise FileNotFoundError("Output path cannot be empty")
         sheet.save(self.args.output)
         print(f"{sheet.label_count} label(s) output on {sheet.page_count} page(s).")
 
