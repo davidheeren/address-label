@@ -106,7 +106,7 @@ class LabelGeneratorApp:
             label_generator = LabelGenerator(args)
             label_generator.generate_pdf()
         except Exception as e:
-            self.tooltip_var.set(e)
+            self._set_tooltip_with_lines(str(e))
             print(e)
         self.save_options_func(args)
 
@@ -145,23 +145,23 @@ class LabelGeneratorApp:
     def _validate_integer(self, new_text: str) -> bool:
         return new_text == "" or new_text.isdigit()
 
+    def _set_tooltip_with_lines(self, new_tooltip: str):
+        min_line_count = 9
+        line_count = new_tooltip.count("\n") + 1
+        if line_count < min_line_count:
+            self.tooltip_var.set(new_tooltip + ("\n" * (min_line_count - line_count)))
+        else:
+            self.tooltip_var.set(new_tooltip)
+
     def _create_frame(self, tooltip_str: str | None) -> ctk.CTkFrame:
         """Creates a frame class with a tooltip"""
         frame = ctk.CTkFrame(self.scroll_frame)
         frame.grid(row=self.frame_row, column=0, padx=OUTER_PADX, pady=OUTER_PADY, sticky="w")
         frame.grid_columnconfigure(0, weight=1, minsize=MIN_FRAME_SIZE)
 
-        def set_tooltip_with_lines(new_tooltip: str):
-            min_line_count = 9
-            line_count = new_tooltip.count("\n") + 1
-            if line_count < min_line_count:
-                self.tooltip_var.set(new_tooltip + ("\n" * (min_line_count - line_count)))
-            else:
-                self.tooltip_var.set(new_tooltip)
-
         if tooltip_str:
-            frame.bind("<Leave>", lambda e: set_tooltip_with_lines(""))
-            frame.bind("<Enter>", lambda e: set_tooltip_with_lines(tooltip_str))
+            frame.bind("<Leave>", lambda e: self._set_tooltip_with_lines(""))
+            frame.bind("<Enter>", lambda e: self._set_tooltip_with_lines(tooltip_str))
         self.frame_row += 1
         return frame
 
