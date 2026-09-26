@@ -140,7 +140,10 @@ class LabelGeneratorApp:
         )
         if not path:
             return
-        self.output_var.set(path)
+        new_path = Path(path)
+        if new_path.suffix in {"", "."}:
+            new_path = new_path.with_suffix(".pdf")
+        self.output_var.set(str(new_path))
 
     def _validate_integer(self, new_text: str) -> bool:
         return new_text == "" or new_text.isdigit()
