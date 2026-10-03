@@ -1,5 +1,6 @@
 
 import customtkinter as ctk
+from CTkToolTip import CTkToolTip
 import filedialpy as fdp
 from argparse import Namespace
 from pathlib import Path
@@ -37,7 +38,7 @@ class LabelGeneratorApp:
         self.name_var = ctk.StringVar()
         self.test_var = ctk.BooleanVar()
         self.launch_var = ctk.BooleanVar()
-        self.tooltip_var = ctk.StringVar(value="")
+        self.tooltip_var = ctk.StringVar(value="status: waiting")
         self.scale_var = ctk.IntVar()
 
         self._set_options(inital_args)
@@ -59,7 +60,7 @@ class LabelGeneratorApp:
         self._setup_test_option()
         self._setup_launch_option()
         self._setup_tasks_bar()
-        self._setup_tooltip_bar()
+        self.status_label = self._setup_status_box()
 
     def _create_root(self) -> ctk.CTk:
         """Creates CTK root and sets vars"""
@@ -105,8 +106,11 @@ class LabelGeneratorApp:
         try:
             label_generator = LabelGenerator(args)
             label_generator.generate_pdf()
+            self.tooltip_var.set("status: successfully generated pdf")
+            self.status_label.configure(text_color="#4caf50")
         except Exception as e:
-            self._set_tooltip_with_lines(str(e))
+            self.tooltip_var.set(f"status: error -- {e}")
+            self.status_label.configure(text_color="#e53935")
             print(e)
         self.save_options_func(args)
 
@@ -148,25 +152,25 @@ class LabelGeneratorApp:
     def _validate_integer(self, new_text: str) -> bool:
         return new_text == "" or new_text.isdigit()
 
-    def _set_tooltip_with_lines(self, new_tooltip: str):
-        min_line_count = 9
-        line_count = new_tooltip.count("\n") + 1
-        if line_count < min_line_count:
-            self.tooltip_var.set(new_tooltip + ("\n" * (min_line_count - line_count)))
-        else:
-            self.tooltip_var.set(new_tooltip)
-
     def _create_frame(self, tooltip_str: str | None) -> ctk.CTkFrame:
         """Creates a frame class with a tooltip"""
         frame = ctk.CTkFrame(self.scroll_frame)
         frame.grid(row=self.frame_row, column=0, padx=OUTER_PADX, pady=OUTER_PADY, sticky="w")
         frame.grid_columnconfigure(0, weight=1, minsize=MIN_FRAME_SIZE)
-
-        if tooltip_str:
-            frame.bind("<Leave>", lambda e: self._set_tooltip_with_lines(""))
-            frame.bind("<Enter>", lambda e: self._set_tooltip_with_lines(tooltip_str))
+        self._attach_tooltip(frame, tooltip_str)
         self.frame_row += 1
         return frame
+
+    def _attach_tooltip(self, base: ctk.CTkBaseClass, tooltip_str: str | None):
+        if tooltip_str:
+            CTkToolTip(base, tooltip_str, justify="left")
+
+    def _attach_tooltip_to_children(self, frame: ctk.CTkFrame, tooltip_str: str | None):
+        """Call after adding all children to `frame`, to extend its tooltip to them."""
+        for child in frame.winfo_children():
+            if isinstance(child, (ctk.CTkEntry, ctk.CTkTextbox)):
+                continue
+            self._attach_tooltip(child, tooltip_str)
 
     # Top left
     def _set_grid_top(self, base: ctk.CTkBaseClass):
@@ -181,7 +185,8 @@ class LabelGeneratorApp:
         base.grid(row=1, column=1, padx=INNER_PADX, pady=INNER_PADY, sticky="e")
 
     def _setup_scale_option(self):
-        scale_frame = self._create_frame("<UI Scale> The UI scale in this window")
+        scale_tooltip = "<UI Scale> The UI scale in this window"
+        scale_frame = self._create_frame(scale_tooltip)
         scale_header = ctk.CTkLabel(scale_frame, text="UI Scale")
         self._set_grid_top(scale_header)
 
@@ -204,28 +209,32 @@ class LabelGeneratorApp:
             scale_label.configure(text=f"{value:.0f}")
         _update_scale_label(self.scale_var.get())
         scale_slider.configure(command=_update_scale_label)
+        self._attach_tooltip_to_children(scale_frame, scale_tooltip)
 
     def _setup_input_option(self):
-        input_frame = self._create_frame("<Input> An Excel file that holds the address data")
+        input_tooltip = "<Input> An Excel file that holds the address data"
+        input_frame = self._create_frame(input_tooltip)
         input_header = ctk.CTkLabel(input_frame, text="Input")
         self._set_grid_top(input_header)
         input_widget = ctk.CTkLabel(input_frame, textvariable=self.input_var)
         self._set_grid_bottom(input_widget)
         input_button = ctk.CTkButton(input_frame, text="Choose...", command=self._update_input_var, width=BUTTON_WIDTH)
         self._set_grid_right(input_button)
+        self._attach_tooltip_to_children(input_frame, input_tooltip)
 
     def _setup_output_option(self):
-        output_frame = self._create_frame("<Output> The path of the pdf that will be created")
+        output_tooltip = "<Output> The path of the pdf that will be created"
+        output_frame = self._create_frame(output_tooltip)
         output_header = ctk.CTkLabel(output_frame, text="Output")
         self._set_grid_top(output_header)
         output_widget = ctk.CTkLabel(output_frame, textvariable=self.output_var)
         self._set_grid_bottom(output_widget)
         output_button = ctk.CTkButton(output_frame, text="Choose...", command=self._update_output_var, width=BUTTON_WIDTH)
         self._set_grid_right(output_button)
+        self._attach_tooltip_to_children(output_frame, output_tooltip)
 
     def _setup_filter_option(self):
-        filter_frame = self._create_frame(
-            """
+        filter_tooltip = """
 <Filter> Chose which rows from the data to include by order, seperated by commas
 * -> all rows
 3 -> single row index
@@ -234,7 +243,7 @@ mary jane -> match rows by name. all words in the filter must be included in the
 ! -> removes the filter instead of add
 Ex: '*, !5-20, !john, 15' -> adds all rows, removes range 5-10, removes all john rows, then adds row 15
 """
-        )
+        filter_frame = self._create_frame(filter_tooltip)
         filter_header = ctk.CTkLabel(filter_frame, text="Filter")
         self._set_grid_top(filter_header)
         filter_widget = ctk.CTkTextbox(filter_frame, height=80, width=MIN_FRAME_SIZE - INNER_PADX * 2, wrap="word")
@@ -287,47 +296,62 @@ Ex: '*, !5-20, !john, 15' -> adds all rows, removes range 5-10, removes all john
             return "break"  # prevents Tk's default Ctrl+A (move-to-line-start) from also firing
         filter_widget.bind("<Control-a>", _select_all)
         self._set_grid_bottom(filter_widget)
+        self._attach_tooltip_to_children(filter_frame, filter_tooltip)
 
     def _setup_no_header_option(self):
-        no_header_frame = self._create_frame("<No Header> The data has no header row")
+        no_header_tooltip = "<No Header> The data has no header row"
+        no_header_frame = self._create_frame(no_header_tooltip)
         no_header_widget = ctk.CTkCheckBox(no_header_frame, text="No Header", variable=self.no_header_var)
         self._set_grid_bottom(no_header_widget)
+        self._attach_tooltip_to_children(no_header_frame, no_header_tooltip)
 
     def _setup_bias_option(self):
-        bias_frame = self._create_frame("<Bias> Number of labels to skip before printing. This is for partially used label sheets")
+        bias_tooltip = "<Bias> Number of labels to skip before printing. This is for partially used label sheets"
+        bias_frame = self._create_frame(bias_tooltip)
         bias_header = ctk.CTkLabel(bias_frame, text="Bias")
         self._set_grid_top(bias_header)
         bias_widget = ctk.CTkEntry(bias_frame, textvariable=self.bias_var, validate="key", validatecommand=self.vint_cmd)
         self._set_grid_bottom(bias_widget)
+        self._attach_tooltip_to_children(bias_frame, bias_tooltip)
 
     def _setup_count_option(self):
-        count_frame = self._create_frame("<Count> How many times to repeat the selected addresses")
+        count_tooltip = "<Count> How many times to repeat the selected addresses"
+        count_frame = self._create_frame(count_tooltip)
         count_header = ctk.CTkLabel(count_frame, text="Count")
         self._set_grid_top(count_header)
         count_widget = ctk.CTkEntry(count_frame, textvariable=self.count_var, validate="key", validatecommand=self.vint_cmd)
         self._set_grid_bottom(count_widget)
+        self._attach_tooltip_to_children(count_frame, count_tooltip)
 
     def _setup_ret_option(self):
-        ret_frame = self._create_frame("<Ret> Prints your return address for each label")
+        ret_tooltip = "<Ret> Prints your return address for each label"
+        ret_frame = self._create_frame(ret_tooltip)
         ret_widget = ctk.CTkCheckBox(ret_frame, text="Ret", variable=self.ret_var)
         self._set_grid_bottom(ret_widget)
+        self._attach_tooltip_to_children(ret_frame, ret_tooltip)
 
     def _setup_name_option(self):
-        name_frame = self._create_frame("<Name> Your name. This specifies which return address to use if the 'Ret' option is enabled. This will remove the row as well")
+        name_tooltip = "<Name> Your name. This specifies which return address to use if the 'Ret' option is enabled. This will remove the row as well"
+        name_frame = self._create_frame(name_tooltip)
         name_header = ctk.CTkLabel(name_frame, text="Name")
         self._set_grid_top(name_header)
         name_widget = ctk.CTkEntry(name_frame, textvariable=self.name_var)
         self._set_grid_bottom(name_widget)
+        self._attach_tooltip_to_children(name_frame, name_tooltip)
 
     def _setup_test_option(self):
-        test_frame = self._create_frame("<Test> Adds a box line around the labels")
+        test_tooltip = "<Test> Adds a box line around the labels"
+        test_frame = self._create_frame(test_tooltip)
         test_widget = ctk.CTkCheckBox(test_frame, text="Test", variable=self.test_var)
         self._set_grid_bottom(test_widget)
+        self._attach_tooltip_to_children(test_frame, test_tooltip)
 
     def _setup_launch_option(self):
-        launch_frame = self._create_frame("<Launch> Opens the output pdf in the browser when its created")
+        launch_tooltip = "<Launch> Opens the output pdf in the browser when its created"
+        launch_frame = self._create_frame(launch_tooltip)
         launch_widget = ctk.CTkCheckBox(launch_frame, text="Launch", variable=self.launch_var)
         self._set_grid_bottom(launch_widget)
+        self._attach_tooltip_to_children(launch_frame, launch_tooltip)
 
     def _setup_tasks_bar(self):
         task_frame = ctk.CTkFrame(self.scroll_frame)
@@ -339,20 +363,26 @@ Ex: '*, !5-20, !john, 15' -> adds all rows, removes range 5-10, removes all john
 
         run_button = ctk.CTkButton(task_frame, text="Run", command=self._generate_pdf, width=BUTTON_WIDTH)
         run_button.grid(row=1, column=0, padx=INNER_PADX, pady=INNER_PADY)
+        self._attach_tooltip(run_button, "Generate a pdf from the chosen options")
 
         def _reset_options():
             self._set_options(get_args(True))
             ctk.set_widget_scaling(self.scale_var.get() / 100)
         reset_button = ctk.CTkButton(task_frame, text="Reset Options", command=_reset_options, width=BUTTON_WIDTH)
         reset_button.grid(row=1, column=1, padx=INNER_PADX, pady=INNER_PADY)
+        self._attach_tooltip(reset_button, "Reset all options to their defaults")
 
         docs_button = ctk.CTkButton(task_frame, text="Open Documentation", command=lambda: webbrowser.open(DOCUMENTATION_URL), width=BUTTON_WIDTH)
         docs_button.grid(row=1, column=2, padx=INNER_PADX, pady=INNER_PADY)
+        self._attach_tooltip(docs_button, "Open the github documentation in the browser")
 
-    def _setup_tooltip_bar(self):
-        tooltip_frame = self._create_frame(None)
-        tooltip_widget = ctk.CTkLabel(tooltip_frame, textvariable=self.tooltip_var, justify="left")
-        self._set_grid_bottom(tooltip_widget)
+    def _setup_status_box(self) -> ctk.CTkLabel:
+        status_tooltip = "Shows the current status and errors of this app"
+        status_frame = self._create_frame(status_tooltip)
+        status_widget = ctk.CTkLabel(status_frame, textvariable=self.tooltip_var, justify="left")
+        self._set_grid_bottom(status_widget)
+        self._attach_tooltip_to_children(status_frame, status_tooltip)
+        return status_widget
 
     def mainloop(self):
         """Runs the app and saves options config on end"""
