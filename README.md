@@ -10,7 +10,7 @@ The script expects an `.xlsx` or `.csv` file with the following columns, in this
 
 `last_name1, first_name1, last_name2, first_name2, address1, address2, city, state, zip, country`
 
-A header row is optional - if your file has one, pass `-H`/`--no-header` so the first row isn't treated as data.
+A header row is optional - the first row is treated as a header by default, so if your file doesn't have one, pass `-H`/`--no-header` so the first row is treated as data.
 
 Rows are referenced by one based index. Row 1 is the first data row (or 2 is if there is a header).
 
