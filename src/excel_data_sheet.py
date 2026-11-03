@@ -19,11 +19,11 @@ class ExcelDataSheet(DataSheet):
 
     def _find_max_row(self, ws: Worksheet) -> int:
         """Finds the max row that is not empty, since ws.max_row counts empty rows at the end"""
-        count = 0
+        max_row = 0
         for row in ws:
             if any(cell.value is not None for cell in row):
-                count += 1
-        return count
+                max_row = row[0].row
+        return max_row
 
     def get_address(self, row: int) -> Address:
         """Returns a address record from the data at the 1 based row index"""

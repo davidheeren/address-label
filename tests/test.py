@@ -74,6 +74,15 @@ class TestLabelGenerator(unittest.TestCase):
         self.assertEqual(new_csv_address2, compare_address)
         self.assertEqual(new_csv_address3, compare_address)
 
+    def test_get_address6(self):
+        new_excel_sheet = ExcelDataSheet(True, EXCEL_DATA_PATH)
+        new_csv_sheet = CsvDataSheet(True, CSV_DATA_PATH)
+        compare_address = Address("Kim", "Mia", None, None, "667 Maple St", None, "Sunnyvale", "CA", "94086", None)
+        self.assertEqual(new_excel_sheet.max_row, 13)
+        self.assertEqual(new_csv_sheet.max_row, 13)
+        self.assertEqual(new_excel_sheet.get_address(13), compare_address)
+        self.assertEqual(new_csv_sheet.get_address(13), compare_address)
+
     def test_match_names1(self):
         args = self._get_default_args()
         label_generator = LabelGenerator(args)
@@ -182,7 +191,7 @@ class TestLabelGenerator(unittest.TestCase):
         args.ret = True
         label_generator = LabelGenerator(args)
         new_indices = label_generator._filter_indices()
-        comare_indices = ({2, 3, 4, 5, 6, 8, 9, 10}, 7)
+        comare_indices = ({2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13}, 7)
         self.assertEqual(new_indices, comare_indices)
 
     def test_filter_indices3(self):
@@ -190,7 +199,7 @@ class TestLabelGenerator(unittest.TestCase):
         args.filter = "*, !5-10, !chen, 7"
         label_generator = LabelGenerator(args)
         new_indices = label_generator._filter_indices()
-        comare_indices = ({3, 4, 7}, -1)
+        comare_indices = ({3, 4, 7, 11, 12, 13}, -1)
         self.assertEqual(new_indices, comare_indices)
 
     def test_filter_indices4(self):
@@ -238,7 +247,7 @@ class TestLabelGenerator(unittest.TestCase):
         args.filter = " * , !9-10 "
         label_generator = LabelGenerator(args)
         new_indices = label_generator._filter_indices()
-        compare_indices = ({2, 3, 4, 5, 6, 7, 8}, -1)
+        compare_indices = ({2, 3, 4, 5, 6, 7, 8, 11, 12, 13}, -1)
         self.assertEqual(new_indices, compare_indices)
 
     def test_filter_indices10(self):
@@ -258,7 +267,7 @@ class TestLabelGenerator(unittest.TestCase):
 
     def test_filter_indices12(self):
         args = self._get_default_args()
-        args.filter = "11"
+        args.filter = "14"
         label_generator = LabelGenerator(args)
         with self.assertRaisesRegex(ValueError, "out of bounds"):
             _ = label_generator._filter_indices()
