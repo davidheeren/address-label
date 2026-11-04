@@ -83,6 +83,22 @@ class TestLabelGenerator(unittest.TestCase):
         self.assertEqual(new_excel_sheet.get_address(13), compare_address)
         self.assertEqual(new_csv_sheet.get_address(13), compare_address)
 
+    def test_format_name(self):
+        cases = [
+            (("Doe", None, None, None), "Doe"),
+            (("Doe", "Jan", None, None), "Jan Doe"),
+            (("Doe", "Jan", None, "Sam"), "Jan & Sam Doe"),
+            (("Doe", "Jan", "Roe", "Sam"), "Jan Doe & Sam Roe"),
+            (("Doe", "Jan", "Roe", None), "Jan Doe & Roe"),
+            (("Doe", None, None, "Sam"), "Sam Doe"),
+            (("Doe", None, "Roe", "Sam"), "Doe & Sam Roe"),
+            (("Doe", None, "Roe", None), "Doe & Roe"),
+            ((None, "Jan", "Roe", "Sam"), None),
+        ]
+        for names, compare_name in cases:
+            address = Address(*names, "1 Main St", None, "Town", "CA", "94086", None)
+            self.assertEqual(LabelGenerator._format_name(address), compare_name)
+
     def test_match_names1(self):
         args = self._get_default_args()
         label_generator = LabelGenerator(args)

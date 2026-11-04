@@ -142,6 +142,25 @@ class LabelGenerator:
 
         return indices, name_idx
 
+    @staticmethod
+    def _format_name(address: Address) -> str | None:
+        """
+        Formats the name based on which entries are empty or not.
+        """
+        if not address.last_name1:
+            return None
+        first = address.first_name1
+        second = address.first_name2
+        name1 = f"{first} {address.last_name1}" if first else address.last_name1
+        if address.last_name2:
+            name2 = f"{second} {address.last_name2}" if second else address.last_name2
+            return f"{name1} & {name2}"
+        if first and second:
+            return f"{first} & {second} {address.last_name1}"
+        if second:
+            return f"{second} {address.last_name1}"
+        return name1
+
     # Makes the method not take self as a parameter
     @staticmethod
     def _draw_address(label, width, height, address: Address | None):
@@ -149,19 +168,8 @@ class LabelGenerator:
         if address is None:
             return
 
-        # Formats the name based on which entries are empty or not
-        # John Miller, John & Mary Miller, John Miller & Mary Sue
-        # If a single name, like a company, should only have last_name1
-        name = ""
-        if address.last_name1 and address.first_name1 and address.last_name2 and address.first_name2:
-            name = f"{address.first_name1} {address.last_name1} & {address.first_name2} {address.last_name2}"
-        elif address.last_name1 and address.first_name1 and address.first_name2:
-            name = f"{address.first_name1} & {address.first_name2} {address.last_name1}"
-        elif address.last_name1 and address.first_name1:
-            name = f"{address.first_name1} {address.last_name1}"
-        elif address.last_name1:
-            name = address.last_name1
-        else:
+        name = LabelGenerator._format_name(address)
+        if name is None:
             print(f"Warning: Skipping line with invalid name '{address.last_name1} {address.first_name1} {address.last_name2} {address.first_name2}'")
             return
 
