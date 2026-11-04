@@ -317,3 +317,27 @@ class TestLabelGenerator(unittest.TestCase):
         label_generator = LabelGenerator(args)
         with self.assertRaisesRegex(ValueError, "not found"):
             _ = label_generator._filter_indices()
+
+    def _get_return_label_count(self, filter: str, count: int) -> int:
+        args = self._get_default_args()
+        args.output = "/dev/null"
+        args.filter = filter
+        args.count = count
+        args.name = "Noah Patel"
+        args.ret = True
+        label_generator = LabelGenerator(args)
+        indices, name_idx = label_generator._filter_indices()
+        sheet = label_generator._create_sheet()
+        label_generator._save_pdf(sheet, indices, name_idx)
+        return sheet.label_count
+
+    def test_return_labels1(self):
+        # 8 recipients and 8 return labels, rows 10-12 are blank
+        self.assertEqual(self._get_return_label_count("*", 1), 16)
+
+    def test_return_labels2(self):
+        self.assertEqual(self._get_return_label_count("*", 2), 32)
+
+    def test_return_labels3(self):
+        # Only Kim is left, rows 10-12 are blank
+        self.assertEqual(self._get_return_label_count("*, !2-9", 1), 2)

@@ -247,6 +247,7 @@ class LabelGenerator:
         repeat_count = self.args.count if self.args.count > 1 else 1
 
         # Add labels for the indices
+        recipient_count = 0
         for i in sorted(list(indices)):
             address = self.data_sheet.get_address(i)
 
@@ -258,6 +259,7 @@ class LabelGenerator:
                 print(f"Warning: Skipping row with name: '{address.first_name1}', index: '{i}' due to one or more missing address fields.")
                 continue
 
+            recipient_count += 1
             for j in range(repeat_count):
                 sheet.add_label(address)
 
@@ -266,7 +268,7 @@ class LabelGenerator:
             if not self.args.name:
                 raise ValueError("Name must be set to use the ret option")
             for j in range(repeat_count):
-                sheet.add_label(self.data_sheet.get_address(name_idx), count=len(indices))
+                sheet.add_label(self.data_sheet.get_address(name_idx), count=recipient_count)
 
         if (self.args.output is None or self.args.output.strip() == ""):
             raise FileNotFoundError("Output path cannot be empty")
