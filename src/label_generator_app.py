@@ -290,6 +290,12 @@ Ex: '*, !5-20, !john, 15' -> adds all rows, removes range 5-10, removes all john
                 pos = end + 1  # +1 to skip the comma
         filter_widget.bind("<KeyRelease>", _on_text_changed)
         _on_text_changed(None)
+        def _sync_filter_widget():
+            """The textbox can't bind to filter_var, so copy the var into it when set from code"""
+            filter_widget.delete("1.0", "end")
+            filter_widget.insert("1.0", self.filter_var.get())
+            _on_text_changed(None)
+        self.sync_filter_widget = _sync_filter_widget
         def _select_all(event):
             filter_widget.tag_add("sel", "1.0", "end")
             # filter_widget.mark_set("insert", "end")  # optional: move cursor to the end after selecting
@@ -367,6 +373,7 @@ Ex: '*, !5-20, !john, 15' -> adds all rows, removes range 5-10, removes all john
 
         def _reset_options():
             self._set_options(get_args(True))
+            self.sync_filter_widget()
             ctk.set_widget_scaling(self.scale_var.get() / 100)
         reset_button = ctk.CTkButton(task_frame, text="Reset Options", command=_reset_options, width=BUTTON_WIDTH)
         reset_button.grid(row=1, column=1, padx=INNER_PADX, pady=INNER_PADY)
